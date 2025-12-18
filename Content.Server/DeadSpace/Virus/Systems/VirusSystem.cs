@@ -22,6 +22,7 @@ using Content.Shared.Chemistry.Reagent;
 using Content.Shared.DeadSpace.Virus.Prototypes;
 using Content.Shared.Body.Prototypes;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.Examine;
 
 namespace Content.Server.DeadSpace.Virus.Systems;
 
@@ -37,6 +38,7 @@ public sealed partial class VirusSystem : SharedVirusSystem
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly VirusDiagnoserDataServerSystem _virusDiagnoserDataServer = default!;
+    [Dependency] private readonly ExamineSystemShared _examine = default!;
     private ISawmill _sawmill = default!;
 
     /// <summary>
@@ -228,6 +230,12 @@ public sealed partial class VirusSystem : SharedVirusSystem
             if (target == host)
                 continue;
 
+            var hostPosition = _transform.GetMapCoordinates(host);
+            var targetPosition = _transform.GetMapCoordinates(target);
+
+            if (!_examine.InRangeUnOccluded(hostPosition, targetPosition, range, null))
+                continue;
+
             ProbInfect((host, component), target);
         }
     }
@@ -245,6 +253,12 @@ public sealed partial class VirusSystem : SharedVirusSystem
 
     public void ProbInfect(VirusData data, EntityUid target, EntityUid? host = null)
     {
+        var ev = new ProbInfectAttemptEvent(target, false, host);
+        RaiseLocalEvent(target, ev);
+
+        if (ev.Cancel)
+            return;
+
         if (!CanInfect(target, data) && !_tag.HasTag(target, IgnoreCanInfectTag))
             return;
 
