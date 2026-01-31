@@ -129,12 +129,14 @@
   components:
   - type: EntityTableContainerFill
     containers:
-      entity_storage: !type:AllSelector
-        children:
-        - !type:NestedSelector
-          tableId: FillLockerAtmospherics
-        - !type:NestedSelector
-          tableId: FillAtmosphericsHardsuit
+        - !type:NestedSelector # DS14
+          tableId: FillAtmosphericsHardsuit # DS14
+#      entity_storage: !type:AllSelector
+#        children:
+#        - !type:NestedSelector
+#          tableId: FillLockerAtmospherics
+#        - !type:NestedSelector
+#          tableId: FillAtmosphericsHardsuit
 
 - type: entity
   id: LockerAtmosphericsFilled
@@ -160,7 +162,7 @@
     - id: RCDAmmo
     - id: AirGrenade
     - id: ClothingOuterCoatAtmosWorking # DS14
-    prob: 0.75
+    prob: 1 # DS14
 
 - type: entityTable
   id: FillAtmosphericsHardsuit
